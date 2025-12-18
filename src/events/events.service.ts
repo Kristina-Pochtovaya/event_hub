@@ -14,7 +14,7 @@ export class EventsService {
   ) {}
 
   async create(dto: CreateEventDto) {
-    const user = await this.usersService.findOne(dto.userId);
+    const user = await this.usersService.findByUserId(dto.userId);
 
     const event = this.eventRepo.create({
       title: dto.title,

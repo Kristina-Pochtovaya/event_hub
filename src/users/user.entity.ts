@@ -20,6 +20,9 @@ export class User {
   @Column({ length: 255 })
   email: string;
 
+  @Column({ length: 255 })
+  password: string;
+
   @Column({
     type: 'enum',
     enum: Object.values(userRole),

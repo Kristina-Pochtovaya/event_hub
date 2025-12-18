@@ -16,6 +16,7 @@ export class UsersService {
       name: dto.name,
       email: dto.email,
       role: dto.role,
+      password: dto.password,
     });
 
     return this.userRepo.save(user);
@@ -25,7 +26,17 @@ export class UsersService {
     return this.userRepo.find();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepo.findOneBy({ email });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  async findByUserId(id: string): Promise<User> {
     const user = await this.userRepo.findOneBy({ id });
 
     if (!user) {

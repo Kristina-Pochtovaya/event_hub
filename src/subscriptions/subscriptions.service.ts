@@ -20,7 +20,7 @@ export class SubscriptionsService {
   ) {}
 
   async subscribe(dto: CreateSubscriptionDto) {
-    const user = await this.usersService.findOne(dto.userId);
+    const user = await this.usersService.findByUserId(dto.userId);
     const event = await this.eventsService.findOne(dto.eventId);
 
     const existing = await this.subscriptionsRepo.findOne({

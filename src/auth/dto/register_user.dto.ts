@@ -1,9 +1,8 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import { IsRoleValid } from 'src/common/validators/is_role_valid.validator';
 import { IsEmailExisting } from 'src/common/validators/is_email_existing.validator';
 
-export class CreateUserDto {
+export class RegisterUserDto {
   @IsString()
   @MinLength(3)
   name: string;
@@ -14,10 +13,6 @@ export class CreateUserDto {
   @IsEmailExisting()
   @Transform(({ value }) => value.trim().replace(/\s+/g, ' '))
   email: string;
-
-  @IsString()
-  @IsRoleValid()
-  role: string;
 
   @IsString()
   @Transform(({ value }) => value.toString())

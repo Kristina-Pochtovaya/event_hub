@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersService } from './users/users.service';
 
 import { EventsModule } from './events/events.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
@@ -10,9 +9,7 @@ import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { APP_GUARD } from '@nestjs/core';
-import { UserOwnerJWT } from './common/guards/task-owner-jwt.guard';
-import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,13 +21,11 @@ import { JwtModule } from '@nestjs/jwt';
       ttl: 20,
       isGlobal: true,
     }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-      }),
-    }),
+    AuthModule,
+    UsersModule,
+    EventsModule,
+    SubscriptionsModule,
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -42,17 +37,8 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
-    UsersModule,
-    EventsModule,
-    SubscriptionsModule,
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: UserOwnerJWT,
-    },
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

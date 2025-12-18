@@ -8,8 +8,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
