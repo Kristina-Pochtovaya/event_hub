@@ -10,6 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AuthModule } from './auth/auth.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -21,6 +23,14 @@ import { AuthModule } from './auth/auth.module';
       ttl: 20,
       isGlobal: true,
     }),
+
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST ?? 'localhost',
+        port: Number(process.env.REDIS_PORT ?? 6379),
+      },
+    }),
+
     AuthModule,
     UsersModule,
     EventsModule,
@@ -37,6 +47,8 @@ import { AuthModule } from './auth/auth.module';
         };
       },
     }),
+
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

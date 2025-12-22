@@ -5,12 +5,14 @@ import { Subscription } from './subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Subscription]),
     UsersModule,
     EventsModule,
+    NotificationsModule,
   ],
   providers: [SubscriptionsService],
   controllers: [SubscriptionsController],
