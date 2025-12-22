@@ -8,4 +8,8 @@ export class UpdateEventDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  @IsString()
+  @IsOptional()
+  endDate: Date;
 }

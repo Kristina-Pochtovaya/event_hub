@@ -28,6 +28,9 @@ export class Event {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ type: 'timestamp', default: () => 'NOW()' })
+  endDate: Date;
+
   @DeleteDateColumn()
   deletedAt: Date;
 

@@ -4,10 +4,17 @@ import { EventsController } from './events.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Event } from './event.entity';
 import { UsersModule } from 'src/users/users.module';
+import { BullModule } from '@nestjs/bull';
+import { EventsCleanupCron } from './events-cleanup.cron';
+import { EventsCleanupProcessor } from './events-cleanup.processor';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event]), UsersModule],
-  providers: [EventsService],
+  imports: [
+    BullModule.registerQueue({ name: 'events-cleanup' }),
+    TypeOrmModule.forFeature([Event]),
+    UsersModule,
+  ],
+  providers: [EventsService, EventsCleanupCron, EventsCleanupProcessor],
   controllers: [EventsController],
   exports: [EventsService],
 })
