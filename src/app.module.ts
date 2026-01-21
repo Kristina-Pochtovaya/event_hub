@@ -12,9 +12,12 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { AuthModule } from './auth/auth.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
@@ -49,6 +52,8 @@ import { BullModule } from '@nestjs/bull';
     }),
 
     NotificationsModule,
+
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

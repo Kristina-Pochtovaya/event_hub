@@ -14,12 +14,10 @@ export class EventsCleanupProcessor {
   constructor(private readonly eventsService: EventsService) {}
 
   @Process('cleanup-expired-events')
-  async sendNotificationSubscribe(job: Job<EventsCleanupJob>) {
-    const { titleEvent, eventId, endDate } = job.data;
-
+  async cleanupExpiredEvents(job: Job<EventsCleanupJob>) {
     const count = await this.eventsService.cleanupExpiredEvents();
 
-    await job.log(`User ${titleEvent} ${eventId} is expired and deleted`);
+    await job.log(`Cleaned ${count} expired events`);
 
     return {
       cleaned: count,

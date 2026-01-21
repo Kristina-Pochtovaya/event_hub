@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
+import { StatsModule } from 'src/stats/stats.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Subscription]),
     UsersModule,
+    StatsModule,
     EventsModule,
     NotificationsModule,
   ],

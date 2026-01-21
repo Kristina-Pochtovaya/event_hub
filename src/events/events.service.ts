@@ -26,7 +26,7 @@ export class EventsService {
       title: dto.title,
       description: dto.description,
       creator: user,
-      endDate: Date.now(),
+      endDate: new Date(),
     });
 
     return this.eventRepo.save(event);

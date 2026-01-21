@@ -15,6 +15,7 @@ async function bootstrap() {
 
   const notificationsQueue = app.get<Queue>(getQueueToken('notifications'));
   const eventsCleanupQueue = app.get<Queue>(getQueueToken('events-cleanup'));
+  const statsQueue = app.get<Queue>(getQueueToken('stats'));
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
@@ -22,6 +23,7 @@ async function bootstrap() {
     queues: [
       new BullAdapter(notificationsQueue),
       new BullAdapter(eventsCleanupQueue),
+      new BullAdapter(statsQueue),
     ],
     serverAdapter: serverAdapter,
   });
