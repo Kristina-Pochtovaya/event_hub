@@ -1,16 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
-import { AdminGuard } from 'src/common/guards/admin.guard';
-import { UsersService } from 'src/users/users.service';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register_user.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('login')
@@ -23,11 +18,5 @@ export class AuthController {
   @Post('register')
   async register(@Body() body: RegisterUserDto) {
     return this.authService.register(body);
-  }
-
-  @UseGuards(AdminGuard)
-  @Post('create-admin')
-  createAdmin(@Body() dto: RegisterUserDto) {
-    return this.usersService.create({ ...dto, role: 'admin' });
   }
 }

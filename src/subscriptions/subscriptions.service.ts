@@ -12,7 +12,7 @@ import { StatsService } from 'src/stats/stats.service';
 export class SubscriptionsService {
   constructor(
     @InjectRepository(Subscription)
-    private readonly subscriptionsRepo: Repository<Subscription>,
+    private readonly subscriptionRepo: Repository<Subscription>,
     private readonly statsService: StatsService,
     private readonly usersService: UsersService,
     private readonly eventsService: EventsService,
@@ -23,7 +23,7 @@ export class SubscriptionsService {
     const user = await this.usersService.findByUserId(dto.userId);
     const event = await this.eventsService.findOne(dto.eventId);
 
-    const existing = await this.subscriptionsRepo.findOne({
+    const existing = await this.subscriptionRepo.findOne({
       where: { user: { id: user.id }, event: { id: event.id } },
     });
 
@@ -38,9 +38,9 @@ export class SubscriptionsService {
       titleEvent: event.title,
     });
 
-    const subscription = this.subscriptionsRepo.create({ user, event });
+    const subscription = this.subscriptionRepo.create({ user, event });
 
-    const result = await this.subscriptionsRepo.save(subscription);
+    const result = await this.subscriptionRepo.save(subscription);
     const count = await this.calculateEventSubscribedStats(event.id);
 
     await this.statsService.calculateEventSubscribedStats({
@@ -52,7 +52,7 @@ export class SubscriptionsService {
   }
 
   async calculateEventSubscribedStats(eventId: string): Promise<number> {
-    const count = await this.subscriptionsRepo.count({
+    const count = await this.subscriptionRepo.count({
       where: {
         event: { id: eventId },
         deletedAt: IsNull(),
@@ -63,7 +63,7 @@ export class SubscriptionsService {
   }
 
   async calculateEventUnsubscribedStats(eventId: string): Promise<number> {
-    const count = await this.subscriptionsRepo.count({
+    const count = await this.subscriptionRepo.count({
       where: {
         event: { id: eventId },
         deletedAt: Not(IsNull()),
@@ -78,7 +78,7 @@ export class SubscriptionsService {
     const user = await this.usersService.findByUserId(dto.userId);
     const event = await this.eventsService.findOne(dto.eventId);
 
-    const subscription = await this.subscriptionsRepo.findOne({
+    const subscription = await this.subscriptionRepo.findOne({
       where: { user: { id: dto.userId }, event: { id: dto.eventId } },
     });
 
@@ -93,7 +93,7 @@ export class SubscriptionsService {
       titleEvent: event.title,
     });
 
-    await this.subscriptionsRepo.softDelete(subscription.id);
+    await this.subscriptionRepo.softDelete(subscription.id);
 
     const count = await this.calculateEventUnsubscribedStats(event.id);
 

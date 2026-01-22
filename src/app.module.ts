@@ -14,6 +14,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { StatsModule } from './stats/stats.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -54,6 +55,8 @@ import { StatsModule } from './stats/stats.module';
     NotificationsModule,
 
     StatsModule,
+
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

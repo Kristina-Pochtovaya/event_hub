@@ -1,19 +1,16 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create_event.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { UpdateEventDto } from './dto/update_event.dto';
 
 @Controller('events')
 export class EventsController {
@@ -41,19 +38,5 @@ export class EventsController {
   @HttpCode(201)
   create(@Body() dto: CreateEventDto) {
     return this.events.create(dto);
-  }
-
-  @Delete(':id')
-  @HttpCode(204)
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    await this.events.remove(id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() dto: UpdateEventDto,
-  ) {
-    return this.events.update(id, dto);
   }
 }

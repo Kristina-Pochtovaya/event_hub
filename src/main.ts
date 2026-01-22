@@ -15,6 +15,7 @@ async function bootstrap() {
 
   const notificationsQueue = app.get<Queue>(getQueueToken('notifications'));
   const eventsCleanupQueue = app.get<Queue>(getQueueToken('events-cleanup'));
+  const importsQueue = app.get<Queue>(getQueueToken('import'));
   const statsQueue = app.get<Queue>(getQueueToken('stats'));
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
@@ -22,6 +23,7 @@ async function bootstrap() {
   createBullBoard({
     queues: [
       new BullAdapter(notificationsQueue),
+      new BullAdapter(importsQueue),
       new BullAdapter(eventsCleanupQueue),
       new BullAdapter(statsQueue),
     ],
