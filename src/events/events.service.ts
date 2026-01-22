@@ -7,9 +7,6 @@ import { UsersService } from '../users/users.service';
 import { UpdateEventDto } from './dto/update_event.dto';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
-import { EventsCleanupCron } from './events-cleanup.cron';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from 'src/app.module';
 
 @Injectable()
 export class EventsService {
