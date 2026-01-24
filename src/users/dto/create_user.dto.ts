@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import { IsRoleValid } from 'src/common/validators/is_role_valid.validator';
-import { IsEmailExisting } from 'src/common/validators/is_email_existing.validator';
+import { IsRoleValid } from '../../common/validators/is_role_valid.validator';
+import { IsEmailExisting } from '../../common/validators/is_email_existing.validator';
 
 export class CreateUserDto {
   @IsString()

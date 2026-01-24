@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from 'src/users/users.module';
-import { IsEmailExistingConstraint } from 'src/common/validators/is_email_existing.validator';
+import { UsersModule } from '../users/users.module';
+import { IsEmailExistingConstraint } from '../common/validators/is_email_existing.validator';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

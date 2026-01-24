@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { IsEmailExistingConstraint } from 'src/common/validators/is_email_existing.validator';
+import { IsEmailExistingConstraint } from '../common/validators/is_email_existing.validator';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 

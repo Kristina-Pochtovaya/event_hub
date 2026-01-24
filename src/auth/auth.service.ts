@@ -5,8 +5,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IsEmailExisting } from 'src/common/validators/is_email_existing.validator';
-import { UsersService } from 'src/users/users.service';
+import { IsEmailExisting } from '../common/validators/is_email_existing.validator';
+import { UsersService } from '../users/users.service';
 import { RegisterUserDto } from './dto/register_user.dto';
 
 @Injectable()

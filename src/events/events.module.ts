@@ -3,7 +3,7 @@ import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Event } from './event.entity';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { BullModule } from '@nestjs/bull';
 import { EventsCleanupCron } from './events-cleanup.cron';
 import { EventsCleanupProcessor } from './events-cleanup.processor';

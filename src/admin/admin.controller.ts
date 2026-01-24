@@ -14,8 +14,8 @@ import { AdminService } from './admin.service';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { EventsService } from '../events/events.service';
 import { UpdateEventDto } from '../events/dto/update_event.dto';
-import { RegisterUserDto } from 'src/auth/dto/register_user.dto';
-import { UsersService } from 'src/users/users.service';
+import { RegisterUserDto } from '../auth/dto/register_user.dto';
+import { UsersService } from '../users/users.service';
 
 @UseGuards(AdminGuard)
 @Controller('admin')

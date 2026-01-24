@@ -6,7 +6,7 @@ import { UsersService } from '../users/users.service';
 import { EventsService } from '../events/events.service';
 import { CreateSubscriptionDto } from './dto/create_subscription.dto';
 import { NotificationsService } from '../notifications/notifications.service';
-import { StatsService } from 'src/stats/stats.service';
+import { StatsService } from '../stats/stats.service';
 
 @Injectable()
 export class SubscriptionsService {

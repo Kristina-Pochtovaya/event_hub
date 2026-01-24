@@ -5,8 +5,8 @@ import { Subscription } from './subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
-import { StatsModule } from 'src/stats/stats.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { StatsModule } from '../stats/stats.module';
 
 @Module({
   imports: [

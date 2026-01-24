@@ -12,7 +12,6 @@ import type { Queue } from 'bull';
 export class EventsService {
   constructor(
     @InjectRepository(Event) private readonly eventRepo: Repository<Event>,
-    @InjectQueue('events-cleanup') private readonly eventsCleanupQueue: Queue,
     private usersService: UsersService,
   ) {}
 
