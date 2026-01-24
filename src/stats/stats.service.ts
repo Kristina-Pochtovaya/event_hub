@@ -1,10 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-
 import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';
+import { Injectable } from '@nestjs/common';
 import { StatsJob } from './stats.processor';
+import type { Queue } from 'bull';
 
 @Injectable()
 export class StatsService {

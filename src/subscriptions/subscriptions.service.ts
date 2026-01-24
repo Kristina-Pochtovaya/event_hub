@@ -24,7 +24,7 @@ export class SubscriptionsService {
     const event = await this.eventsService.findOne(dto.eventId);
 
     const existing = await this.subscriptionRepo.findOne({
-      where: { user: { id: user.id }, event: { id: event.id } },
+      where: { user: { id: user?.id }, event: { id: event?.id } },
     });
 
     if (existing) {

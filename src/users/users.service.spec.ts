@@ -1,18 +1,94 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
+import { NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create_user.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let userRepo: any;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
+  beforeEach(() => {
+    userRepo = {
+      create: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      findOneBy: jest.fn(),
+    };
 
-    service = module.get<UsersService>(UsersService);
+    service = new UsersService(userRepo);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('create', () => {
+    it('should create and save a user', async () => {
+      const dto: CreateUserDto = {
+        name: 'John',
+        email: 'john@example.com',
+        password: 'pass',
+        role: 'user',
+      };
+      const user = { ...dto, id: '1' };
+
+      userRepo.create.mockReturnValue(user);
+      userRepo.save.mockResolvedValue(user);
+
+      const result = await service.create(dto);
+
+      expect(userRepo.create).toHaveBeenCalledWith(dto);
+      expect(userRepo.save).toHaveBeenCalledWith(user);
+      expect(result).toEqual(user);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return all users', async () => {
+      const users = [{ id: '1' }, { id: '2' }];
+      userRepo.find.mockResolvedValue(users);
+
+      const result = await service.findAll();
+
+      expect(userRepo.find).toHaveBeenCalled();
+      expect(result).toEqual(users);
+    });
+  });
+
+  describe('findByEmail', () => {
+    it('should return user if found', async () => {
+      const user = { id: '1', email: 'john@example.com' };
+      userRepo.findOneBy.mockResolvedValue(user);
+
+      const result = await service.findByEmail('john@example.com');
+
+      expect(userRepo.findOneBy).toHaveBeenCalledWith({
+        email: 'john@example.com',
+      });
+      expect(result).toEqual(user);
+    });
+
+    it('should throw NotFoundException if user not found', async () => {
+      userRepo.findOneBy.mockResolvedValue(undefined);
+
+      await expect(service.findByEmail('notfound@example.com')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('findByUserId', () => {
+    it('should return user if found', async () => {
+      const user = { id: '1', email: 'john@example.com' };
+      userRepo.findOneBy.mockResolvedValue(user);
+
+      const result = await service.findByUserId('1');
+
+      expect(userRepo.findOneBy).toHaveBeenCalledWith({ id: '1' });
+      expect(result).toEqual(user);
+    });
+
+    it('should throw NotFoundException if user not found', async () => {
+      userRepo.findOneBy.mockResolvedValue(undefined);
+
+      await expect(service.findByUserId('999')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 });

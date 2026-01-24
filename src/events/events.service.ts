@@ -5,8 +5,6 @@ import { IsNull, LessThan, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create_event.dto';
 import { UsersService } from '../users/users.service';
 import { UpdateEventDto } from './dto/update_event.dto';
-import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';
 
 @Injectable()
 export class EventsService {

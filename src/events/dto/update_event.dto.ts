@@ -3,13 +3,13 @@ import { IsOptional, IsString, MinLength } from 'class-validator';
 export class UpdateEventDto {
   @IsString()
   @MinLength(3)
-  title: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @IsString()
   @IsOptional()
-  endDate: Date;
+  endDate?: Date;
 }
