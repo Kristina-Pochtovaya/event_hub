@@ -39,4 +39,4 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: a
+        uses: actions/checkout@v3
