@@ -38,7 +38,7 @@ describe('EventHub (e2e)', () => {
   });
 
   afterAll(async () => {
-    app.close();
+    await app.close();
   });
 
   it('subscribe → enqueue notification + subscription stats', async () => {
@@ -46,7 +46,7 @@ describe('EventHub (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@admin.com', password: 12345 });
 
-    const accessToken = login.body.access_token;
+    const accessToken: string = login.body.access_token as string;
 
     const payload = jwtDecode(accessToken);
     const userId = payload.sub;

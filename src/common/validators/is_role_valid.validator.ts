@@ -6,7 +6,7 @@ import {
 import { userRole } from '../user_role';
 
 export function IsRoleValid(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'IsRoleValid',
       target: object.constructor,

@@ -29,7 +29,7 @@ export class IsEmailExistingConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsEmailExisting(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'IsEmailExisting',
       target: object.constructor,
