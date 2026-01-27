@@ -1,6 +1,7 @@
 import { Process, Processor } from '@nestjs/bull';
 
 import type { Job } from 'bull';
+import { PinoLogger } from 'nestjs-pino';
 
 export type StatsJob = {
   count: number;
@@ -9,11 +10,13 @@ export type StatsJob = {
 
 @Processor('stats')
 export class StatsProcessor {
+  constructor(private readonly logger: PinoLogger) {}
+
   @Process('recalculate-subscriptions')
   async recalculateSubscriptions(job: Job<StatsJob>) {
     const { eventId, count } = job.data;
 
-    console.log(`Event ${eventId} has: ${count} subscriptions`);
+    this.logger.info(`Event ${eventId} has: ${count} subscriptions`);
 
     await job.log(`Event ${eventId} has: ${count} subscriptions`);
   }
@@ -22,7 +25,7 @@ export class StatsProcessor {
   async recalculateUnsSubscriptions(job: Job<StatsJob>) {
     const { eventId, count } = job.data;
 
-    console.log(`Event ${eventId} has: ${count} unsubscriptions`);
+    this.logger.info(`Event ${eventId} has: ${count} unsubscriptions`);
 
     await job.log(`Event ${eventId} has: ${count} unsubscriptions`);
   }

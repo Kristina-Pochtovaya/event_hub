@@ -7,9 +7,10 @@ import { Queue } from 'bull';
 import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { Logger } from 'nestjs-pino/Logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
   // await app.init();
 
@@ -40,6 +41,8 @@ async function bootstrap() {
     }),
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
+  app.useLogger(app.get(Logger));
 
   await app.listen(process.env.PORT ?? 3000);
 }
