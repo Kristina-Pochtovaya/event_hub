@@ -15,6 +15,7 @@ import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { StatsModule } from './stats/stats.module';
 import { AdminModule } from './admin/admin.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -57,6 +58,8 @@ import { AdminModule } from './admin/admin.module';
     StatsModule,
 
     AdminModule,
+
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
