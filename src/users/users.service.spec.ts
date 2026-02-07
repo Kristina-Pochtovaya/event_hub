@@ -2,6 +2,13 @@ import { UsersService } from './users.service';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create_user.dto';
 
+const PASSWORD = 'pass';
+const HASHED_PASSWORD = `hashed-${PASSWORD}`;
+
+jest.mock('bcrypt', () => ({
+  hash: jest.fn(async () => HASHED_PASSWORD),
+}));
+
 describe('UsersService', () => {
   let service: UsersService;
   let userRepo: any;
@@ -22,7 +29,7 @@ describe('UsersService', () => {
       const dto: CreateUserDto = {
         name: 'John',
         email: 'john@example.com',
-        password: 'pass',
+        password: HASHED_PASSWORD,
         role: 'user',
       };
       const user = { ...dto, id: '1' };

@@ -9,6 +9,12 @@ import { BullExplorer } from '@nestjs/bull/dist/bull.explorer';
 import { jwtDecode } from 'jwt-decode';
 import { EventsCleanupCron } from '../src/events/events-cleanup.cron';
 
+const PASSWORD = '12345';
+
+jest.mock('bcrypt', () => ({
+  compare: jest.fn(async (password) => password === PASSWORD),
+}));
+
 describe('EventHub (e2e)', () => {
   let app: INestApplication<App>;
 
@@ -44,9 +50,10 @@ describe('EventHub (e2e)', () => {
   it('subscribe → enqueue notification + subscription stats', async () => {
     const login = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'admin@admin.com', password: 12345 });
+      .send({ email: 'admin@admin.com', password: PASSWORD });
 
     const accessToken: string = login.body.access_token as string;
+    console.log(accessToken, 'accessToken');
 
     const payload = jwtDecode(accessToken);
     const userId = payload.sub;
@@ -94,7 +101,7 @@ describe('EventHub (e2e)', () => {
   it('unsubscribe → enqueue notification + unsubscription stats', async () => {
     const login = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'admin@admin.com', password: 12345 });
+      .send({ email: 'admin@admin.com', password: PASSWORD });
 
     const accessToken = login.body.access_token;
 
@@ -152,7 +159,7 @@ describe('EventHub (e2e)', () => {
   it('admin enqueue import events job', async () => {
     const login = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email: 'admin@admin.com', password: 12345 });
+      .send({ email: 'admin@admin.com', password: PASSWORD });
 
     const accessToken = login.body.access_token;
 

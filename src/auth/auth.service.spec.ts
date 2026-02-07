@@ -4,6 +4,12 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
+const PASSWORD = '12345';
+
+jest.mock('bcrypt', () => ({
+  compare: jest.fn(async (password) => password === PASSWORD),
+}));
+
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
@@ -76,16 +82,16 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should throw BadRequestException if email is missing', async () => {
-      await expect(service.login({ email: undefined as any })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.login({ email: undefined as any, password: PASSWORD }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if user not found', async () => {
       mockUsersService.findByEmail.mockResolvedValue(undefined);
 
       await expect(
-        service.login({ email: 'missing@test.com' }),
+        service.login({ email: 'missing@test.com', password: PASSWORD }),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -98,7 +104,10 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(user);
       mockJwtService.signAsync.mockResolvedValue('jwt-token');
 
-      const result = await service.login({ email: 'test@test.com' });
+      const result = await service.login({
+        email: 'test@test.com',
+        password: PASSWORD,
+      });
 
       expect(usersService.findByEmail).toHaveBeenCalledWith('test@test.com');
 
