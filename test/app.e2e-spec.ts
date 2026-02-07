@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import { EventsCleanupCron } from '../src/events/events-cleanup.cron';
 
 const PASSWORD = '12345';
+const retry = { attempts: 3, backoff: 10000 };
 
 jest.mock('bcrypt', () => ({
   compare: jest.fn(async (password) => password === PASSWORD),
@@ -87,6 +88,7 @@ describe('EventHub (e2e)', () => {
         eventId,
         titleEvent,
       }),
+      retry,
     );
 
     expect(statsQueue.add).toHaveBeenCalledWith(
@@ -95,6 +97,7 @@ describe('EventHub (e2e)', () => {
         eventId,
         count: expect.any(Number),
       }),
+      retry,
     );
   });
 
@@ -145,6 +148,7 @@ describe('EventHub (e2e)', () => {
         eventId,
         titleEvent,
       }),
+      retry,
     );
 
     expect(statsQueue.add).toHaveBeenCalledWith(
@@ -153,6 +157,7 @@ describe('EventHub (e2e)', () => {
         eventId,
         count: expect.any(Number),
       }),
+      retry,
     );
   });
 
@@ -179,9 +184,8 @@ describe('EventHub (e2e)', () => {
 
     expect(eventsCleanupQueue.add).toHaveBeenCalledWith(
       'cleanup-expired-events',
-      expect.objectContaining({
-        runAt: expect.any(Date),
-      }),
+      expect.objectContaining({ runAt: expect.any(Date) }),
+      retry,
     );
   });
 });

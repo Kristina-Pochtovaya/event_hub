@@ -10,10 +10,16 @@ export class NotificationsService {
   ) {}
 
   async notifySubscribed(data: NotificationJob) {
-    await this.notificationsQueue.add('send-notification-subscribe', data);
+    await this.notificationsQueue.add('send-notification-subscribe', data, {
+      attempts: 3,
+      backoff: 10000,
+    });
   }
 
   async notifyUnsubscribed(data: NotificationJob) {
-    await this.notificationsQueue.add('send-notification-unsubscribed', data);
+    await this.notificationsQueue.add('send-notification-unsubscribed', data, {
+      attempts: 3,
+      backoff: 10000,
+    });
   }
 }

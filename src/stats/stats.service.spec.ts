@@ -34,6 +34,7 @@ describe('StatsService', () => {
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-subscriptions',
       data,
+      { attempts: 3, backoff: 10000 },
     );
   });
 
@@ -43,6 +44,7 @@ describe('StatsService', () => {
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-unsubscriptions',
       data,
+      { attempts: 3, backoff: 10000 },
     );
   });
 });

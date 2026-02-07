@@ -8,10 +8,16 @@ export class StatsService {
   constructor(@InjectQueue('stats') private readonly statsQueue: Queue) {}
 
   async calculateEventSubscribedStats(data: StatsJob) {
-    await this.statsQueue.add('recalculate-subscriptions', data);
+    await this.statsQueue.add('recalculate-subscriptions', data, {
+      attempts: 3,
+      backoff: 10000,
+    });
   }
 
   async calculateEventUnubscribedStats(data: StatsJob) {
-    await this.statsQueue.add('recalculate-unsubscriptions', data);
+    await this.statsQueue.add('recalculate-unsubscriptions', data, {
+      attempts: 3,
+      backoff: 10000,
+    });
   }
 }

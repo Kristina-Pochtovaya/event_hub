@@ -43,6 +43,7 @@ describe('NotificationsService', () => {
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-subscribe',
         data,
+        { attempts: 3, backoff: 10000 },
       );
     });
   });
@@ -61,6 +62,7 @@ describe('NotificationsService', () => {
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-unsubscribed',
         data,
+        { attempts: 3, backoff: 10000 },
       );
     });
   });

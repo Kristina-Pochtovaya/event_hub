@@ -13,8 +13,12 @@ export class EventsCleanupCron {
   @Cron('0 0 * * *')
   // @Cron('*/10 * * * * *')
   async handleCron() {
-    await this.cleanupQueue.add('cleanup-expired-events', {
-      runAt: new Date(),
-    });
+    await this.cleanupQueue.add(
+      'cleanup-expired-events',
+      {
+        runAt: new Date(),
+      },
+      { attempts: 3, backoff: 10000 },
+    );
   }
 }
