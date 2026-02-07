@@ -69,10 +69,13 @@ describe('AuthService', () => {
         role: 'user',
       });
 
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
-        id: user.id,
-        role: user.role,
-      });
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
+        {
+          id: user.id,
+          role: user.role,
+        },
+        { expiresIn: '1d' },
+      );
 
       expect(result).toEqual({
         access_token: 'jwt-token',
