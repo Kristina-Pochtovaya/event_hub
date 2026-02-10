@@ -1,7 +1,6 @@
 import { UsersService } from './users.service';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create_user.dto';
-import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +14,12 @@ jest.mock('bcrypt', () => ({
 
 describe('UsersService', () => {
   let service: UsersService;
-  let userRepo: Repository<User>;
+  const userRepo = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOneBy: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,18 +27,13 @@ describe('UsersService', () => {
         UsersService,
         {
           provide: getRepositoryToken(User),
-          useValue: {
-            create: jest.fn(),
-            save: jest.fn(),
-            find: jest.fn(),
-            findOneBy: jest.fn(),
-          },
+          useValue: userRepo,
         },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    userRepo = module.get<Repository<User>>(getRepositoryToken(User));
+    jest.clearAllMocks();
   });
 
   describe('create', () => {
@@ -47,13 +46,12 @@ describe('UsersService', () => {
       };
       const user = { ...dto, id: '1' };
 
-      (userRepo.create as jest.Mock).mockReturnValue(user);
-      (userRepo.save as jest.Mock).mockResolvedValue(user);
+      userRepo.create.mockReturnValue(user);
+      userRepo.save.mockResolvedValue(user);
 
       const result = await service.create(dto);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+
       expect(userRepo.create).toHaveBeenCalledWith(dto);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(userRepo.save).toHaveBeenCalledWith(user);
       expect(result).toEqual(user);
     });
@@ -62,11 +60,9 @@ describe('UsersService', () => {
   describe('findAll', () => {
     it('should return all users', async () => {
       const users = [{ id: '1' }, { id: '2' }];
-      (userRepo.find as jest.Mock).mockResolvedValue(users);
+      userRepo.find.mockResolvedValue(users);
 
       const result = await service.findAll();
-
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(userRepo.find).toHaveBeenCalled();
       expect(result).toEqual(users);
     });
@@ -75,11 +71,10 @@ describe('UsersService', () => {
   describe('findByEmail', () => {
     it('should return user if found', async () => {
       const user = { id: '1', email: 'john@example.com' };
-      (userRepo.findOneBy as jest.Mock).mockResolvedValue(user);
+      userRepo.findOneBy.mockResolvedValue(user);
 
       const result = await service.findByEmail('john@example.com');
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(userRepo.findOneBy).toHaveBeenCalledWith({
         email: 'john@example.com',
       });
@@ -87,7 +82,7 @@ describe('UsersService', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      (userRepo.findOneBy as jest.Mock).mockResolvedValue(undefined);
+      userRepo.findOneBy.mockResolvedValue(undefined);
 
       await expect(service.findByEmail('notfound@example.com')).rejects.toThrow(
         NotFoundException,
@@ -98,16 +93,16 @@ describe('UsersService', () => {
   describe('findByUserId', () => {
     it('should return user if found', async () => {
       const user = { id: '1', email: 'john@example.com' };
-      (userRepo.findOneBy as jest.Mock).mockResolvedValue(user);
+      userRepo.findOneBy.mockResolvedValue(user);
 
       const result = await service.findByUserId('1');
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+
       expect(userRepo.findOneBy).toHaveBeenCalledWith({ id: '1' });
       expect(result).toEqual(user);
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      (userRepo.findOneBy as jest.Mock).mockResolvedValue(undefined);
+      userRepo.findOneBy.mockResolvedValue(undefined);
 
       await expect(service.findByUserId('999')).rejects.toThrow(
         NotFoundException,

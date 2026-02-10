@@ -104,10 +104,8 @@ describe('EventHub (e2e)', () => {
       'send-notification-subscribe',
 
       expect.objectContaining<NotificationPayload>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        userId: expect.any(String),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        userName: expect.any(String),
+        userId: expect.stringMatching(/\S+/) as string,
+        userName: expect.stringMatching(/\S+/) as string,
         eventId,
         titleEvent,
       }),
@@ -118,8 +116,7 @@ describe('EventHub (e2e)', () => {
       'recalculate-subscriptions',
       expect.objectContaining({
         eventId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        count: expect.any(Number),
+        count: expect.anything() as number,
       }),
       retry,
     );
@@ -168,10 +165,8 @@ describe('EventHub (e2e)', () => {
     expect(notificationsQueue.add).toHaveBeenCalledWith(
       'send-notification-unsubscribed',
       expect.objectContaining({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        userId: expect.any(String),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        userName: expect.any(String),
+        userId: expect.stringMatching(/\S+/) as string,
+        userName: expect.stringMatching(/\S+/) as string,
         eventId,
         titleEvent,
       }),
@@ -182,8 +177,7 @@ describe('EventHub (e2e)', () => {
       'recalculate-unsubscriptions',
       expect.objectContaining({
         eventId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        count: expect.any(Number),
+        count: expect.anything() as number,
       }),
       retry,
     );
@@ -213,8 +207,7 @@ describe('EventHub (e2e)', () => {
 
     expect(eventsCleanupQueue.add).toHaveBeenCalledWith(
       'cleanup-expired-events',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      expect.objectContaining({ runAt: expect.any(Date) }),
+      expect.objectContaining({ runAt: expect.anything() as Date }),
       retry,
     );
   });

@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsService } from './notifications.service';
 import { getQueueToken } from '@nestjs/bull';
-import type { Queue } from 'bull';
 import { NotificationJob } from './notifications.processor';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
-  let notificationsQueue: jest.Mocked<Queue>;
+
+  const notificationsQueue = {
+    add: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,15 +16,14 @@ describe('NotificationsService', () => {
         NotificationsService,
         {
           provide: getQueueToken('notifications'),
-          useValue: {
-            add: jest.fn(),
-          },
+          useValue: notificationsQueue,
         },
       ],
     }).compile();
 
     service = module.get<NotificationsService>(NotificationsService);
-    notificationsQueue = module.get(getQueueToken('notifications'));
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -40,7 +41,6 @@ describe('NotificationsService', () => {
 
       await service.notifySubscribed(data);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-subscribe',
         data,
@@ -60,7 +60,6 @@ describe('NotificationsService', () => {
 
       await service.notifyUnsubscribed(data);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-unsubscribed',
         data,

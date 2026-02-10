@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { SubscriptionsService } from './subscriptions.service';
 import { Subscription } from './subscription.entity';
 import { StatsService } from '../stats/stats.service';
@@ -12,11 +11,33 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('SubscriptionsService', () => {
   let service: SubscriptionsService;
-  let subscriptionRepo: Repository<Subscription>;
-  let statsService: StatsService;
-  let usersService: UsersService;
-  let eventsService: EventsService;
-  let notificationsService: NotificationsService;
+
+  const subscriptionRepo = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    count: jest.fn(),
+    softDelete: jest.fn(),
+  };
+
+  const usersService = {
+    findByUserId: jest.fn(),
+  };
+
+  const eventsService = {
+    findOne: jest.fn(),
+  };
+
+  const notificationsService = {
+    notifySubscribed: jest.fn(),
+    notifyUnsubscribed: jest.fn(),
+  };
+
+  const statsService = {
+    calculateEventSubscribedStats: jest.fn(),
+    calculateEventUnubscribedStats: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,54 +45,30 @@ describe('SubscriptionsService', () => {
         SubscriptionsService,
         {
           provide: getRepositoryToken(Subscription),
-          useValue: {
-            findOne: jest.fn(),
-            create: jest.fn(),
-            save: jest.fn(),
-            count: jest.fn(),
-            softDelete: jest.fn(),
-          },
+          useValue: subscriptionRepo,
         },
         {
           provide: StatsService,
-          useValue: {
-            calculateEventSubscribedStats: jest.fn(),
-            calculateEventUnubscribedStats: jest.fn(),
-          },
+          useValue: statsService,
         },
         {
           provide: UsersService,
-          useValue: {
-            findByUserId: jest.fn(),
-          },
+          useValue: usersService,
         },
         {
           provide: EventsService,
-          useValue: {
-            findOne: jest.fn(),
-          },
+          useValue: eventsService,
         },
         {
           provide: NotificationsService,
-          useValue: {
-            notifySubscribed: jest.fn(),
-            notifyUnsubscribed: jest.fn(),
-          },
+          useValue: notificationsService,
         },
       ],
     }).compile();
 
     service = module.get<SubscriptionsService>(SubscriptionsService);
-    subscriptionRepo = module.get<Repository<Subscription>>(
-      getRepositoryToken(Subscription),
-    );
-    statsService = module.get<StatsService>(StatsService);
-    usersService = module.get<UsersService>(
-      UsersService,
-    ) as jest.Mocked<UsersService>;
-    eventsService = module.get<EventsService>(EventsService);
-    notificationsService =
-      module.get<NotificationsService>(NotificationsService);
+
+    jest.clearAllMocks();
   });
 
   describe('subscribe', () => {
@@ -81,37 +78,29 @@ describe('SubscriptionsService', () => {
       const event = { id: 'e1', title: 'Event 1' };
       const subscription = { id: 's1', user, event };
 
-      (usersService.findByUserId as jest.Mock).mockResolvedValue(user);
-      (eventsService.findOne as jest.Mock).mockResolvedValue(event);
-      (subscriptionRepo.findOne as jest.Mock).mockResolvedValue(undefined);
-      (subscriptionRepo.create as jest.Mock).mockReturnValue(subscription);
-      (subscriptionRepo.save as jest.Mock).mockResolvedValue(subscription);
-      (subscriptionRepo.count as jest.Mock).mockResolvedValue(1);
-      (
-        statsService.calculateEventSubscribedStats as jest.Mock
-      ).mockResolvedValue(1);
+      usersService.findByUserId.mockResolvedValue(user);
+      eventsService.findOne.mockResolvedValue(event);
+      subscriptionRepo.findOne.mockResolvedValue(undefined);
+      subscriptionRepo.create.mockReturnValue(subscription);
+      subscriptionRepo.save.mockResolvedValue(subscription);
+      subscriptionRepo.count.mockResolvedValue(1);
+      statsService.calculateEventSubscribedStats.mockResolvedValue(1);
 
       const result = await service.subscribe(dto);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+
       expect(usersService.findByUserId).toHaveBeenCalledWith('u1');
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(eventsService.findOne).toHaveBeenCalledWith('e1');
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.findOne).toHaveBeenCalledWith({
         where: { user: { id: 'u1' }, event: { id: 'e1' } },
       });
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.create).toHaveBeenCalledWith({ user, event });
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.save).toHaveBeenCalledWith(subscription);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsService.notifySubscribed).toHaveBeenCalledWith({
         userId: 'u1',
         userName: 'John',
         eventId: 'e1',
         titleEvent: 'Event 1',
       });
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(statsService.calculateEventSubscribedStats).toHaveBeenCalledWith({
         eventId: 'e1',
         count: 1,
@@ -122,14 +111,12 @@ describe('SubscriptionsService', () => {
     it('should return existing subscription if already exists', async () => {
       const dto: CreateSubscriptionDto = { userId: 'u1', eventId: 'e1' };
       const existing = { id: 's1' };
-      (subscriptionRepo.findOne as jest.Mock).mockResolvedValue(existing);
+      subscriptionRepo.findOne.mockResolvedValue(existing);
 
       const result = await service.subscribe(dto);
 
       expect(result).toEqual(existing);
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.create).not.toHaveBeenCalled();
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.save).not.toHaveBeenCalled();
     });
   });
@@ -141,31 +128,26 @@ describe('SubscriptionsService', () => {
       const event = { id: 'e1', title: 'Event 1' };
       const subscription = { id: 's1' };
 
-      (usersService.findByUserId as jest.Mock).mockResolvedValue(user);
-      (eventsService.findOne as jest.Mock).mockResolvedValue(event);
-      (subscriptionRepo.findOne as jest.Mock).mockResolvedValue(subscription);
-      (subscriptionRepo.softDelete as jest.Mock).mockResolvedValue(undefined);
-      (subscriptionRepo.count as jest.Mock).mockResolvedValue(2);
-      (
-        statsService.calculateEventUnubscribedStats as jest.Mock
-      ).mockResolvedValue(2);
+      usersService.findByUserId.mockResolvedValue(user);
+      eventsService.findOne.mockResolvedValue(event);
+      subscriptionRepo.findOne.mockResolvedValue(subscription);
+      subscriptionRepo.softDelete.mockResolvedValue(undefined);
+      subscriptionRepo.count.mockResolvedValue(2);
+
+      statsService.calculateEventUnubscribedStats.mockResolvedValue(2);
 
       const result = await service.unsubscribe(dto);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.findOne).toHaveBeenCalledWith({
         where: { user: { id: 'u1' }, event: { id: 'e1' } },
       });
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(subscriptionRepo.softDelete).toHaveBeenCalledWith('s1');
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsService.notifyUnsubscribed).toHaveBeenCalledWith({
         userId: 'u1',
         userName: 'John',
         eventId: 'e1',
         titleEvent: 'Event 1',
       });
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(statsService.calculateEventUnubscribedStats).toHaveBeenCalledWith({
         eventId: 'e1',
         count: 2,
@@ -175,7 +157,7 @@ describe('SubscriptionsService', () => {
 
     it('should throw NotFoundException if subscription does not exist', async () => {
       const dto: CreateSubscriptionDto = { userId: 'u1', eventId: 'e1' };
-      (subscriptionRepo.findOne as jest.Mock).mockResolvedValue(undefined);
+      subscriptionRepo.findOne.mockResolvedValue(undefined);
 
       await expect(service.unsubscribe(dto)).rejects.toThrow(NotFoundException);
     });

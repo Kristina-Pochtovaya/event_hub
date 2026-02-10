@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StatsService } from './stats.service';
 import { getQueueToken } from '@nestjs/bull';
-import { Queue } from 'bull';
 
 describe('StatsService', () => {
   let service: StatsService;
-  let statsQueue: jest.Mocked<Queue>;
+
+  const statsQueue = {
+    add: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,15 +15,14 @@ describe('StatsService', () => {
         StatsService,
         {
           provide: getQueueToken('stats'),
-          useValue: {
-            add: jest.fn(),
-          },
+          useValue: statsQueue,
         },
       ],
     }).compile();
 
     service = module.get<StatsService>(StatsService);
-    statsQueue = module.get(getQueueToken('stats'));
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -31,7 +32,7 @@ describe('StatsService', () => {
   it('should enqueue subscriptions job', async () => {
     const data = { eventId: '1', count: 5 };
     await service.calculateEventSubscribedStats(data);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-subscriptions',
       data,
@@ -42,7 +43,7 @@ describe('StatsService', () => {
   it('should enqueue unsubscriptions job', async () => {
     const data = { eventId: '2', count: 3 };
     await service.calculateEventUnubscribedStats(data);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-unsubscriptions',
       data,

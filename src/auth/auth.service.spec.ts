@@ -12,15 +12,13 @@ jest.mock('bcrypt', () => ({
 
 describe('AuthService', () => {
   let service: AuthService;
-  let usersService: UsersService;
-  let jwtService: JwtService;
 
-  const mockUsersService = {
+  const usersService = {
     create: jest.fn(),
     findByEmail: jest.fn(),
   };
 
-  const mockJwtService = {
+  const jwtService = {
     signAsync: jest.fn(),
   };
 
@@ -30,18 +28,16 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UsersService,
-          useValue: mockUsersService,
+          useValue: usersService,
         },
         {
           provide: JwtService,
-          useValue: mockJwtService,
+          useValue: jwtService,
         },
       ],
     }).compile();
 
     service = module.get(AuthService);
-    usersService = module.get(UsersService);
-    jwtService = module.get(JwtService);
 
     jest.clearAllMocks();
   });
@@ -59,18 +55,15 @@ describe('AuthService', () => {
         role: 'user',
       };
 
-      mockUsersService.create.mockResolvedValue(user);
-      mockJwtService.signAsync.mockResolvedValue('jwt-token');
+      usersService.create.mockResolvedValue(user);
+      jwtService.signAsync.mockResolvedValue('jwt-token');
 
       const result = await service.register(dto);
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersService.create).toHaveBeenCalledWith({
         ...dto,
         role: 'user',
       });
-
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         {
           id: user.id,
@@ -78,7 +71,6 @@ describe('AuthService', () => {
         },
         { expiresIn: '1d' },
       );
-
       expect(result).toEqual({
         access_token: 'jwt-token',
       });
@@ -93,7 +85,7 @@ describe('AuthService', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(undefined);
+      usersService.findByEmail.mockResolvedValue(undefined);
 
       await expect(
         service.login({ email: 'missing@test.com', password: PASSWORD }),
@@ -106,23 +98,19 @@ describe('AuthService', () => {
         role: 'user',
       };
 
-      mockUsersService.findByEmail.mockResolvedValue(user);
-      mockJwtService.signAsync.mockResolvedValue('jwt-token');
+      usersService.findByEmail.mockResolvedValue(user);
+      jwtService.signAsync.mockResolvedValue('jwt-token');
 
       const result = await service.login({
         email: 'test@test.com',
         password: PASSWORD,
       });
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersService.findByEmail).toHaveBeenCalledWith('test@test.com');
-
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(jwtService.signAsync).toHaveBeenCalledWith({
         id: user.id,
         role: user.role,
       });
-
       expect(result).toEqual({
         access_token: 'jwt-token',
       });
