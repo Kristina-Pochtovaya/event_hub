@@ -40,6 +40,7 @@ describe('NotificationsService', () => {
 
       await service.notifySubscribed(data);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-subscribe',
         data,
@@ -59,6 +60,7 @@ describe('NotificationsService', () => {
 
       await service.notifyUnsubscribed(data);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(notificationsQueue.add).toHaveBeenCalledWith(
         'send-notification-unsubscribed',
         data,

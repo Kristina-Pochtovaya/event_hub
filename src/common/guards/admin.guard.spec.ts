@@ -1,10 +1,13 @@
 import { ExecutionContext } from '@nestjs/common';
 import { AdminGuard } from './admin.guard';
+import { userRole } from '../user_role';
 
 describe('AdminGuard', () => {
   let guard: AdminGuard;
 
-  const mockExecutionContext = (user?: any): ExecutionContext =>
+  const mockExecutionContext = (user?: {
+    role: keyof typeof userRole;
+  }): ExecutionContext =>
     ({
       switchToHttp: () => ({
         getRequest: () => ({
@@ -17,26 +20,26 @@ describe('AdminGuard', () => {
     guard = new AdminGuard();
   });
 
-  it('should allow access for admin user', async () => {
+  it('should allow access for admin user', () => {
     const context = mockExecutionContext({ role: 'admin' });
 
-    const result = await guard.canActivate(context);
+    const result = guard.canActivate(context);
 
     expect(result).toBe(true);
   });
 
-  it('should deny access for non-admin user', async () => {
+  it('should deny access for non-admin user', () => {
     const context = mockExecutionContext({ role: 'user' });
 
-    const result = await guard.canActivate(context);
+    const result = guard.canActivate(context);
 
     expect(result).toBe(false);
   });
 
-  it('should deny access if user is missing', async () => {
+  it('should deny access if user is missing', () => {
     const context = mockExecutionContext(undefined);
 
-    const result = await guard.canActivate(context);
+    const result = guard.canActivate(context);
 
     expect(result).toBe(false);
   });

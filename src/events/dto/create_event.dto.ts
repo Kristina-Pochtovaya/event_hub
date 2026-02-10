@@ -3,12 +3,12 @@ import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 export class CreateEventDto {
   @IsString()
   @MinLength(3)
-  title: string;
+  title!: string;
 
   @IsString()
   @IsOptional()
-  description: string;
+  description!: string;
 
   @IsNotEmpty()
-  userId: string;
+  userId!: string;
 }

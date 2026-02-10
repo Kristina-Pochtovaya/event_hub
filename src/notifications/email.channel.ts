@@ -4,7 +4,7 @@ import { PinoLogger } from 'nestjs-pino';
 @Injectable()
 export class EmailChannel {
   constructor(private readonly logger: PinoLogger) {}
-  async send(message) {
+  send(message: string) {
     this.logger.info(message);
   }
 }

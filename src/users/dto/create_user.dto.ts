@@ -6,20 +6,22 @@ import { IsEmailExisting } from '../../common/validators/is_email_existing.valid
 export class CreateUserDto {
   @IsString()
   @MinLength(3)
-  name: string;
+  name!: string;
 
   @IsString()
   @IsEmail()
   @MinLength(3)
   @IsEmailExisting()
-  @Transform(({ value }) => value.trim().replace(/\s+/g, ' '))
-  email: string;
+  @Transform(({ value }: { value: string }) =>
+    value.trim().replace(/\s+/g, ' '),
+  )
+  email!: string;
 
   @IsString()
   @IsRoleValid()
-  role: string;
+  role!: string;
 
   @IsString()
-  @Transform(({ value }) => value.toString())
-  password: string;
+  @Transform(({ value }: { value: string }) => value.toString())
+  password!: string;
 }

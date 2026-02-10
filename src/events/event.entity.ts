@@ -14,29 +14,29 @@ import { Subscription } from '../subscriptions/subscription.entity';
 @Entity('events')
 export class Event {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 255 })
-  title: string;
+  title!: string;
 
   @Column({ length: 255, nullable: true })
   description?: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Column({ type: 'timestamp', default: () => 'NOW()' })
-  endDate: Date;
+  endDate!: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt!: Date;
 
   @ManyToOne(() => User, (user) => user.events)
-  creator: User;
+  creator!: User;
 
   @OneToMany(() => Subscription, (subscription) => subscription.event)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 }

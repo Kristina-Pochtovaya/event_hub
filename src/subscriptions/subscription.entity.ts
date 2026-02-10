@@ -4,7 +4,6 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Event } from '../events/event.entity';
@@ -12,17 +11,17 @@ import { Event } from '../events/event.entity';
 @Entity('subscriptions')
 export class Subscription {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deletedAt!: Date;
 
   @ManyToOne(() => User, (user) => user.subscriptions)
-  user: User;
+  user!: User;
 
   @ManyToOne(() => Event, (event) => event.subscriptions)
-  event: Event;
+  event!: Event;
 }

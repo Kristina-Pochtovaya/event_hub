@@ -17,8 +17,6 @@ jobs:
           POSTGRES_USER: ci_user
           POSTGRES_PASSWORD: ci_pass
           POSTGRES_DB: ci_db
-        ports:
-          - 5432:5432
         options: >-
           --health-cmd="pg_isready -U ci_user"
           --health-interval=10s
@@ -27,8 +25,11 @@ jobs:
 
       redis:
         image: redis:7
-        ports:
-          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
       NODE_ENV: test
@@ -40,3 +41,21 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -U ci_user; do sleep 1; done
+
+      - name: Run tests
+        run: npm test

@@ -2,6 +2,12 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
+import { JwtPayload } from 'jwt-decode';
+
+type MockRequest = {
+  headers: { authorization?: string };
+  user?: JwtPayload;
+};
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -30,11 +36,11 @@ describe('AuthGuard', () => {
   beforeEach(() => {
     reflector = {
       getAllAndOverride: jest.fn(),
-    } as any;
+    } as unknown as Reflector;
 
     jwtService = {
       verifyAsync: jest.fn(),
-    } as any;
+    } as unknown as JwtService;
 
     guard = new AuthGuard(reflector, jwtService);
   });
@@ -47,6 +53,7 @@ describe('AuthGuard', () => {
     const result = await guard.canActivate(context);
 
     expect(result).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(jwtService.verifyAsync).not.toHaveBeenCalled();
   });
 
@@ -80,7 +87,7 @@ describe('AuthGuard', () => {
     jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue(payload);
 
     const context = mockExecutionContext({ token: 'valid-token' });
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<MockRequest>();
 
     const result = await guard.canActivate(context);
 

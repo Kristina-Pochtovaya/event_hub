@@ -1,9 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { JwtPayload } from './auth.guard';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
+  canActivate(context: ExecutionContext): boolean {
+    const req = context
+      .switchToHttp()
+      .getRequest<Request & { user?: JwtPayload }>();
 
     const user = req.user;
 

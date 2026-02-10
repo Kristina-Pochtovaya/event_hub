@@ -31,6 +31,7 @@ describe('StatsService', () => {
   it('should enqueue subscriptions job', async () => {
     const data = { eventId: '1', count: 5 };
     await service.calculateEventSubscribedStats(data);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-subscriptions',
       data,
@@ -41,6 +42,7 @@ describe('StatsService', () => {
   it('should enqueue unsubscriptions job', async () => {
     const data = { eventId: '2', count: 3 };
     await service.calculateEventUnubscribedStats(data);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(statsQueue.add).toHaveBeenCalledWith(
       'recalculate-unsubscriptions',
       data,

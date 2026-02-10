@@ -5,13 +5,15 @@ import { Event } from '../events/event.entity';
 import { Subscription } from '../subscriptions/subscription.entity';
 import type { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AdminService {
   constructor(
-    @InjectRepository(User) private readonly userRepo,
-    @InjectRepository(Event) private readonly eventRepo,
-    @InjectRepository(Subscription) private readonly subscriptionRepo,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Event) private readonly eventRepo: Repository<Event>,
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepo: Repository<Subscription>,
     @InjectQueue('import') private readonly importQueue: Queue,
   ) {}
 

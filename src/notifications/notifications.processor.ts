@@ -17,10 +17,9 @@ export class NotificationsProcessor {
   async sendNotificationSubscribe(job: Job<NotificationJob>) {
     const { userName, userId, titleEvent, eventId } = job.data;
 
-    await this.emailChannel.send(
+    this.emailChannel.send(
       `User ${userName} ${userId} is subscribed on event: ${titleEvent} ${eventId}`,
     );
-
     await job.log(
       `User ${userName} ${userId} is subscribed on event: ${titleEvent} ${eventId}`,
     );
@@ -30,7 +29,7 @@ export class NotificationsProcessor {
   async sendNotificationUnsubscribe(job: Job<NotificationJob>) {
     const { userName, userId, titleEvent, eventId } = job.data;
 
-    await this.emailChannel.send(
+    this.emailChannel.send(
       `User ${userName} ${userId} is unsubscribed on event: ${titleEvent} ${eventId}`,
     );
     await job.log(

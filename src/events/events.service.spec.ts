@@ -57,7 +57,7 @@ describe('EventsService', () => {
       eventRepo.create.mockReturnValue(event);
       eventRepo.save.mockResolvedValue(event);
 
-      const result = await service.create(dto as any);
+      const result = await service.create(dto);
 
       expect(usersService.findByUserId).toHaveBeenCalledWith(dto.userId);
       expect(eventRepo.create).toHaveBeenCalled();
@@ -122,9 +122,14 @@ describe('EventsService', () => {
         title: 'old',
         description: 'old',
         endDate: new Date(),
-      };
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        deletedAt: new Date(),
+        creator: { id: 'u1', name: 'John' },
+        subscriptions: [],
+      } as unknown as Event;
 
-      jest.spyOn(service, 'findOne').mockResolvedValue(event as any);
+      jest.spyOn(service, 'findOne').mockResolvedValue(event);
       eventRepo.save.mockResolvedValue(event);
 
       const dto = { title: 'new' };

@@ -31,7 +31,7 @@ export class SubscriptionsService {
       return existing;
     }
 
-    this.notificationsService.notifySubscribed({
+    await this.notificationsService.notifySubscribed({
       userId: user.id,
       userName: user.name,
       eventId: event.id,
@@ -86,7 +86,7 @@ export class SubscriptionsService {
       throw new NotFoundException('Subscription is not found');
     }
 
-    this.notificationsService.notifyUnsubscribed({
+    await this.notificationsService.notifyUnsubscribed({
       userId: user.id,
       userName: user.name,
       eventId: event.id,

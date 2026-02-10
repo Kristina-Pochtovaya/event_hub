@@ -7,7 +7,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 const PASSWORD = '12345';
 
 jest.mock('bcrypt', () => ({
-  compare: jest.fn(async (password) => password === PASSWORD),
+  compare: jest.fn((password) => password === PASSWORD),
 }));
 
 describe('AuthService', () => {
@@ -64,11 +64,13 @@ describe('AuthService', () => {
 
       const result = await service.register(dto);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersService.create).toHaveBeenCalledWith({
         ...dto,
         role: 'user',
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         {
           id: user.id,
@@ -86,7 +88,7 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should throw BadRequestException if email is missing', async () => {
       await expect(
-        service.login({ email: undefined as any, password: PASSWORD }),
+        service.login({ email: '', password: PASSWORD }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -112,8 +114,10 @@ describe('AuthService', () => {
         password: PASSWORD,
       });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(usersService.findByEmail).toHaveBeenCalledWith('test@test.com');
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(jwtService.signAsync).toHaveBeenCalledWith({
         id: user.id,
         role: user.role,

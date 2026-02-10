@@ -12,29 +12,29 @@ import { Subscription } from '../subscriptions/subscription.entity';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ length: 255 })
-  email: string;
+  email!: string;
 
   @Column({ length: 255 })
-  password: string;
+  password!: string;
 
   @Column({
     type: 'enum',
     enum: Object.values(userRole),
   })
-  role: string;
+  role!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @OneToMany(() => Event, (event) => event.creator)
-  events: Event[];
+  events!: Event[];
 
   @OneToMany(() => Subscription, (subscription) => subscription.user)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 }

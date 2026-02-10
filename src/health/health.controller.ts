@@ -26,7 +26,7 @@ export class HealthController {
     try {
       await this.dataSource.query('SELECT 1');
       dbAlive = true;
-    } catch (err) {
+    } catch {
       dbAlive = false;
     }
     return {

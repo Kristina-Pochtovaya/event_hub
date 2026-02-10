@@ -12,8 +12,27 @@ import { EventsCleanupCron } from '../src/events/events-cleanup.cron';
 const PASSWORD = '12345';
 const retry = { attempts: 3, backoff: 10000 };
 
+type LoginResponse = {
+  access_token: string;
+};
+
+type EventResponse = {
+  id: string;
+  title: string;
+};
+
+type NotificationPayload = {
+  userId: string;
+  userName: string;
+  eventId: string;
+  titleEvent: string;
+};
+type JwtPayload = {
+  sub: string;
+};
+
 jest.mock('bcrypt', () => ({
-  compare: jest.fn(async (password) => password === PASSWORD),
+  compare: jest.fn((password) => password === PASSWORD),
 }));
 
 describe('EventHub (e2e)', () => {
@@ -53,10 +72,10 @@ describe('EventHub (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@admin.com', password: PASSWORD });
 
-    const accessToken: string = login.body.access_token as string;
-    console.log(accessToken, 'accessToken');
+    const loginBody = login.body as LoginResponse;
+    const accessToken: string = loginBody.access_token;
 
-    const payload = jwtDecode(accessToken);
+    const payload = jwtDecode<JwtPayload>(accessToken);
     const userId = payload.sub;
 
     const event = await request(app.getHttpServer())
@@ -68,8 +87,9 @@ describe('EventHub (e2e)', () => {
         description: 'test subscription',
       });
 
-    const eventId = event.body.id;
-    const titleEvent = event.body.title;
+    const eventBody = event.body as EventResponse;
+    const eventId = eventBody.id;
+    const titleEvent = eventBody.title;
 
     await request(app.getHttpServer())
       .post('/subscriptions/subscribe')
@@ -82,8 +102,11 @@ describe('EventHub (e2e)', () => {
 
     expect(notificationsQueue.add).toHaveBeenCalledWith(
       'send-notification-subscribe',
-      expect.objectContaining({
+
+      expect.objectContaining<NotificationPayload>({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         userId: expect.any(String),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         userName: expect.any(String),
         eventId,
         titleEvent,
@@ -95,6 +118,7 @@ describe('EventHub (e2e)', () => {
       'recalculate-subscriptions',
       expect.objectContaining({
         eventId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         count: expect.any(Number),
       }),
       retry,
@@ -106,9 +130,9 @@ describe('EventHub (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@admin.com', password: PASSWORD });
 
-    const accessToken = login.body.access_token;
-
-    const payload = jwtDecode(accessToken);
+    const loginBody = login.body as LoginResponse;
+    const accessToken = loginBody.access_token;
+    const payload = jwtDecode<JwtPayload>(accessToken);
     const userId = payload.sub;
 
     const event = await request(app.getHttpServer())
@@ -120,8 +144,9 @@ describe('EventHub (e2e)', () => {
         description: 'test subscription',
       });
 
-    const eventId = event.body.id;
-    const titleEvent = event.body.title;
+    const eventBody = event.body as EventResponse;
+    const eventId = eventBody.id;
+    const titleEvent = eventBody.title;
 
     await request(app.getHttpServer())
       .post('/subscriptions/subscribe')
@@ -143,7 +168,9 @@ describe('EventHub (e2e)', () => {
     expect(notificationsQueue.add).toHaveBeenCalledWith(
       'send-notification-unsubscribed',
       expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         userId: expect.any(String),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         userName: expect.any(String),
         eventId,
         titleEvent,
@@ -155,6 +182,7 @@ describe('EventHub (e2e)', () => {
       'recalculate-unsubscriptions',
       expect.objectContaining({
         eventId,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         count: expect.any(Number),
       }),
       retry,
@@ -166,7 +194,8 @@ describe('EventHub (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@admin.com', password: PASSWORD });
 
-    const accessToken = login.body.access_token;
+    const loginBody = login.body as LoginResponse;
+    const accessToken = loginBody.access_token;
 
     const res = await request(app.getHttpServer())
       .post('/admin/events/import')
@@ -184,6 +213,7 @@ describe('EventHub (e2e)', () => {
 
     expect(eventsCleanupQueue.add).toHaveBeenCalledWith(
       'cleanup-expired-events',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       expect.objectContaining({ runAt: expect.any(Date) }),
       retry,
     );

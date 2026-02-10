@@ -19,6 +19,7 @@ import { HealthModule } from './health/health.module';
 import { LoggerModule } from 'nestjs-pino';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import DbConfig from './config/db.config';
 
 @Module({
   imports: [
@@ -69,7 +70,7 @@ import { APP_GUARD } from '@nestjs/core';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const db = config.get('db');
+        const db = config.get<typeof DbConfig>('db');
 
         return {
           ...db,

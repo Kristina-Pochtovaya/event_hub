@@ -1,0 +1,8 @@
+{
+  "eslint.validate": ["typescript", "javascript", "typescriptreact"],
+  "eslint.run": "onSave",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnSave": true
+}
