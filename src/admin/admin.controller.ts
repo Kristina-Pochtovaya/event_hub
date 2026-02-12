@@ -18,7 +18,7 @@ import { RegisterUserDto } from '../auth/dto/register_user.dto';
 import { UsersService } from '../users/users.service';
 
 @UseGuards(AdminGuard)
-@Controller('admin')
+@Controller('admins')
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,
@@ -36,7 +36,7 @@ export class AdminController {
     return this.adminService.enqueueImport();
   }
 
-  @Post('create-admin')
+  @Post('admin')
   createAdmin(@Body() dto: RegisterUserDto) {
     return this.usersService.create({ ...dto, role: 'admin' });
   }
