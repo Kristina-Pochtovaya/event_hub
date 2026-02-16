@@ -192,7 +192,7 @@ describe('EventHub (e2e)', () => {
     const accessToken = loginBody.access_token;
 
     const res = await request(app.getHttpServer())
-      .post('/admin/events/import')
+      .post('/admins/events/import')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(201);
 

@@ -11,9 +11,6 @@ import { Logger } from 'nestjs-pino/Logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-
-  // await app.init();
-
   const notificationsQueue = app.get<Queue>(getQueueToken('notifications'));
   const eventsCleanupQueue = app.get<Queue>(getQueueToken('events-cleanup'));
   const importsQueue = app.get<Queue>(getQueueToken('import'));
@@ -41,9 +38,7 @@ async function bootstrap() {
     }),
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
   app.useLogger(app.get(Logger));
-
   await app.listen(process.env.PORT ?? 3000);
 }
 

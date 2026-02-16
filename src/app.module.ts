@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
 import { EventsModule } from './events/events.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -54,19 +53,16 @@ import DbConfig from './config/db.config';
       ttl: 20,
       isGlobal: true,
     }),
-
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST ?? 'localhost',
         port: Number(process.env.REDIS_PORT ?? 6379),
       },
     }),
-
     AuthModule,
     UsersModule,
     EventsModule,
     SubscriptionsModule,
-
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -78,13 +74,9 @@ import DbConfig from './config/db.config';
         };
       },
     }),
-
     NotificationsModule,
-
     StatsModule,
-
     AdminModule,
-
     HealthModule,
   ],
   controllers: [AppController],

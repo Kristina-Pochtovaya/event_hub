@@ -39,7 +39,7 @@ export class SubscriptionsService {
     });
 
     const subscription = this.subscriptionRepo.create({ user, event });
-
+    // console.log(subscription, 'Q!');
     const result = await this.subscriptionRepo.save(subscription);
     const count = await this.calculateEventSubscribedStats(event.id);
 
